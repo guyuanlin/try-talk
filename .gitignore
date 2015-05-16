@@ -69,3 +69,6 @@ target/
 # static and media
 static/media/
 static/static_files/
+
+environments/*
+!environments/local.sh
