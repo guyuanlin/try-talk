@@ -6,12 +6,12 @@ TEMPLATE_DEBUG = DEBUG
 
 # Using SpatialLite backend
 DATABASES = {
-    'default': {
-        'ENGINE': 'django.contrib.gis.db.backends.spatialite',
-        'NAME': os.path.join(BASE_DIR, 'db.sqlite3'),
-    }
+	'default': {
+		'ENGINE': 'django.contrib.gis.db.backends.postgis',
+		'NAME': 'trytalk',
+		'USER': 'test',
+		'PASSWORD': 'test',
+		'HOST': '127.0.0.1',
+		'PORT': '5432',
+	 }
 }
-
-
-# For GeoDjango to be able to find the SpatiaLite library
-SPATIALITE_LIBRARY_PATH='/usr/local/lib/mod_spatialite.dylib'
