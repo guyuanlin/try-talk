@@ -5,7 +5,6 @@ from django.utils.translation import ugettext as _
 from rest_framework.authtoken.models import Token
 
 from . import models
-from accounts.serializers import UserSerializer
 from mobile_notifications.models import (
 	IOSDevice,
 	AndroidDevice,
@@ -98,29 +97,3 @@ class LoginSerializer(serializers.Serializer):
 		except models.FacebookID.DoesNotExist:
 			msg = _(u'Facebook ID "%s" 不存在' % fb_id)
 			raise ValueError(msg)
-
-
-class RegisterSerializer(UserSerializer):
-
-	auth_token = serializers.ReadOnlyField(
-		source='get_auth_token',
-		help_text=_(u'認證金鑰')
-	)
-
-	def create(self, validated_data):
-		fb_id = validated_data.pop('fb_id')
-		user_model = get_user_model()
-		user = user_model(**validated_data)
-		user.save()
-		models.FacebookID.objects.create(
-			fb_id=fb_id,
-			user=user
-		)
-		return user
-
-	class Meta:
-		model = get_user_model()
-		fields = (
-			'id', 'username', 'email', 'first_name', 'birthday', 'auth_token', 'is_vip',
-			'gender', 'postcode', 'city', 'district', 'address', 'upgrade_detail',
-		)
