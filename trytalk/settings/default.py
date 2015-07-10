@@ -54,6 +54,11 @@ MIDDLEWARE_CLASSES = (
 	'django.middleware.clickjacking.XFrameOptionsMiddleware',
 )
 
+AUTHENTICATION_BACKENDS = (
+	'django.contrib.auth.backends.ModelBackend',
+	'fb_accounts.backends.FacebookIDModelBackend',
+)
+
 ROOT_URLCONF = 'trytalk.urls'
 
 WSGI_APPLICATION = 'trytalk.wsgi.application'

@@ -54,7 +54,5 @@ class FacebookUserViewSet(viewsets.GenericViewSet):
 		"""
 		serializer = self.get_serializer(data=request.data)
 		serializer.is_valid(raise_exception=True)
-		is_registered = serializer.data['is_registered']
-		if is_registered:
-			serializer.save()
+		serializer.save()
 		return Response(serializer.data)
