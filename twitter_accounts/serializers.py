@@ -16,11 +16,11 @@ from mobile_notifications.models import (
 
 class LoginSerializer(serializers.ModelSerializer):
 
-	fb_id = serializers.CharField(
+	twitter_id = serializers.CharField(
 		write_only=True,
 		required=True,
 		allow_null=False,
-		help_text=_(u'使用者的 FB ID')
+		help_text=_(u'使用者的 Twitter ID')
 	)
 	device_type = serializers.ChoiceField(
 		write_only=True,
@@ -47,7 +47,7 @@ class LoginSerializer(serializers.ModelSerializer):
 
 	def validate(self, data):
 		credentials = {
-			'fb_id': data.get('fb_id')
+			'twitter_id': data.get('twitter_id')
 		}
 		if all(credentials.values()):
 			user = authenticate(**credentials)
@@ -56,16 +56,16 @@ class LoginSerializer(serializers.ModelSerializer):
 				raise serializers.ValidationError(msg)
 			return data
 		else:
-			msg = _(u'請輸入 Facebook ID')
+			msg = _(u'請輸入 Twitter ID')
 			raise serializers.ValidationError(msg)
 
 	def create(slef, validated_data):
-		fb_id = validated_data.get('fb_id')
+		twitter_id = validated_data.get('twitter_id')
 		device_type = validated_data.get('device_type')
 		reg_id = validated_data.get('reg_id')
 
-		fb_account, created = models.FacebookID.objects.get_or_create(fb_id=fb_id)
-		user = fb_account.user
+		twitter_account, created = models.TwitterID.objects.get_or_create(twitter_id=twitter_id)
+		user = twitter_account.user
 		if device_type and device_type == IOS_TYPE:
 			device, created = IOSDevice.objects.get_or_create(
 				reg_id=reg_id
@@ -82,4 +82,4 @@ class LoginSerializer(serializers.ModelSerializer):
 
 	class Meta:
 		model = get_user_model()
-		fields = ('fb_id', 'device_type', 'reg_id', 'auth_token')
+		fields = ('twitter_id', 'device_type', 'reg_id', 'auth_token')

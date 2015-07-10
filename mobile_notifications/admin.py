@@ -55,5 +55,5 @@ class HistoryAdmin(admin.ModelAdmin):
 
 
 admin.site.register(IOSDevice, IOSDeviceAdmin)
-admin.site.register(AndroidDevice, AndroidDeviceAdmin)
+# admin.site.register(AndroidDevice, AndroidDeviceAdmin)
 admin.site.register(History, HistoryAdmin)
