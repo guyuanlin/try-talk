@@ -70,5 +70,5 @@ target/
 static/media/
 static/static_files/
 
-environments/*
-!environments/local.sh
+deployment/*
+!deployment/local.sh
