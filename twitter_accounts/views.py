@@ -12,10 +12,10 @@ from django.utils.translation import ugettext as _
 
 from . import serializers, models
 
-FB_ID_KEY = 'fb_id'
+FB_ID_KEY = 'twitter_id'
 
 
-class FacebookUserViewSet(viewsets.GenericViewSet):
+class TwitterUserViewSet(viewsets.GenericViewSet):
 
 	throttle_classes = ()
 	permission_classes = (
@@ -29,13 +29,13 @@ class FacebookUserViewSet(viewsets.GenericViewSet):
 	@list_route(methods=['post'])
 	def login(self, request):
 		"""
-		Facebook 登入
+		Twitter 登入
 		
 		---
 		response_serializer: serializers.LoginSerializer
 		parameters:
-			- name: fb_id
-			  description: 使用者的 Facebook ID
+			- name: twitter_id
+			  description: 使用者的 Twitter ID
 			  required: True
 			  type: string
 			  paramType: form
@@ -44,7 +44,7 @@ class FacebookUserViewSet(viewsets.GenericViewSet):
 			- code: 200
 			  message: 執行成功
 			- code: 400
-			  message: 輸入的參數有錯誤，將有錯誤的欄位與訊息個別回報，會回傳的 keys 為 fb_id
+			  message: 輸入的參數有錯誤，將有錯誤的欄位與訊息個別回報，會回傳的 keys 為 twitter_id
 		"""
 		serializer = self.get_serializer(data=request.data)
 		serializer.is_valid(raise_exception=True)

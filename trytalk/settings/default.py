@@ -42,6 +42,7 @@ INSTALLED_APPS = (
 	'rest_framework_swagger',
 	'accounts',
 	'fb_accounts',
+	'twitter_accounts',
 	'mobile_notifications',
 )
 
@@ -52,6 +53,13 @@ MIDDLEWARE_CLASSES = (
 	'django.contrib.auth.middleware.AuthenticationMiddleware',
 	'django.contrib.messages.middleware.MessageMiddleware',
 	'django.middleware.clickjacking.XFrameOptionsMiddleware',
+)
+
+AUTHENTICATION_BACKENDS = (
+	'django.contrib.auth.backends.ModelBackend',
+	'accounts.backends.GuestModelBackend',
+	'fb_accounts.backends.FacebookIDModelBackend',
+	'twitter_accounts.backends.TwitterIDModelBackend',
 )
 
 ROOT_URLCONF = 'trytalk.urls'

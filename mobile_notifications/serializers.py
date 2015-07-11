@@ -1,4 +1,6 @@
 # -*- coding: utf-8 -*-
+import re
+
 from django.contrib.auth import get_user_model
 from rest_framework import serializers
 from django.utils.translation import ugettext as _
@@ -6,7 +8,21 @@ from django.utils.translation import ugettext as _
 from . import models
 
 
-class IOSDeviceSerializer(serializers.ModelSerializer):
+IOS_REG_ID_REGEX = '[0-9a-f]{64}'
+
+class IOSRegIDMixin(object):
+
+	def validate_reg_id(self, value):
+		if value:
+			value = value.strip()
+			match_result = re.match(IOS_REG_ID_REGEX, value)
+			if not match_result:
+				msg = 'invalid registration id'
+				raise serializers.ValidationError(msg)
+		return value
+
+
+class IOSDeviceSerializer(IOSRegIDMixin, serializers.ModelSerializer):
 
 	user = serializers.PrimaryKeyRelatedField(
 		help_text=_(u'使用者 ID'),
