@@ -29,13 +29,8 @@ class TwitterUserViewSet(viewsets.GenericViewSet):
 	@list_route(methods=['post'])
 	def login(self, request):
 		"""
-		Twitter 會員登入(不需 Token)<br>
-
-		若 status code 為 200，需注意以下兩種情況：<br>
-		<ul>
-			<li>is_registered = False : 表示此 Twitter ID 尚未註冊，請進入會員資料填寫頁面</li>
-			<li>is_registered = True, auth_token = null : 表示已註冊，但尚未通過認證，請進入認證碼頁面</li>
-		</ul>
+		Twitter 登入
+		
 		---
 		response_serializer: serializers.LoginSerializer
 		parameters:
@@ -49,8 +44,7 @@ class TwitterUserViewSet(viewsets.GenericViewSet):
 			- code: 200
 			  message: 執行成功
 			- code: 400
-			  message: 輸入的參數有錯誤，將有錯誤的欄位與訊息個別回報，會回傳的 keys 為 twitter_id 
-			  		   與 non_field_errors(密碼錯誤時會使用此欄位顯示)
+			  message: 輸入的參數有錯誤，將有錯誤的欄位與訊息個別回報，會回傳的 keys 為 twitter_id
 		"""
 		serializer = self.get_serializer(data=request.data)
 		serializer.is_valid(raise_exception=True)

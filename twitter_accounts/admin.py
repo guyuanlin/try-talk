@@ -6,4 +6,4 @@ from . import models
 class TwitterIDAdmin(admin.ModelAdmin):
 
 	list_display = ('twitter_id', 'user')
-	readonly_fields = ('twitter_id', 'user')
+	readonly_fields = ('twitter_id', 'user', 'create')

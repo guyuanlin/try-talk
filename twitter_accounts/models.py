@@ -22,6 +22,11 @@ class TwitterID(models.Model):
 		help_text=_(u'使用者的 Twitter ID'),
 		unique=True,
 	)
+	create = models.DateTimeField(
+		verbose_name=_(u'建立時間'),
+		auto_now_add=True,
+		auto_now=False,
+	)
 
 	def __unicode__(self):
 		return self.twitter_id
@@ -37,5 +42,6 @@ class TwitterID(models.Model):
 		return super(TwitterID, self).save(*args, **kwargs)
 
 	class Meta:
-		verbose_name = _(u'Twitter ID')
-		verbose_name_plural = _(u'Twitter IDs')
+		ordering = ('-create',)
+		verbose_name = _(u'Twitter 使用者')
+		verbose_name_plural = _(u'Twitter 使用者')

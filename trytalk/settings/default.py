@@ -57,6 +57,7 @@ MIDDLEWARE_CLASSES = (
 
 AUTHENTICATION_BACKENDS = (
 	'django.contrib.auth.backends.ModelBackend',
+	'accounts.backends.GuestModelBackend',
 	'fb_accounts.backends.FacebookIDModelBackend',
 	'twitter_accounts.backends.TwitterIDModelBackend',
 )

@@ -12,9 +12,10 @@ from mobile_notifications.models import (
 	IOS_TYPE,
 	# ANDROID_TYPE
 )
+from mobile_notifications.serializers import IOSRegIDMixin
 
 
-class LoginSerializer(serializers.ModelSerializer):
+class LoginSerializer(IOSRegIDMixin, serializers.ModelSerializer):
 
 	twitter_id = serializers.CharField(
 		write_only=True,
@@ -45,16 +46,16 @@ class LoginSerializer(serializers.ModelSerializer):
 			token = Token.objects.create(user=obj)
 			return token.key
 
-	def validate(self, data):
+	def validate_twitter_id(self, value):
 		credentials = {
-			'twitter_id': data.get('twitter_id')
+			'twitter_id': value
 		}
 		if all(credentials.values()):
 			user = authenticate(**credentials)
 			if user and not user.is_active:
-				msg = _(u'帳號未啟用')
+				msg = _(u'帳號已被停用')
 				raise serializers.ValidationError(msg)
-			return data
+			return value
 		else:
 			msg = _(u'請輸入 Twitter ID')
 			raise serializers.ValidationError(msg)

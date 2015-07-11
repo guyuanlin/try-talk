@@ -1,3 +1,9 @@
 from django.contrib import admin
 
-# Register your models here.
+from . import models
+
+@admin.register(models.Guest)
+class GuestAdmin(admin.ModelAdmin):
+
+	list_display = ('guest_id', 'user')
+	readonly_fields = ('guest_id', 'user', 'create')

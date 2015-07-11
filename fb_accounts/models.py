@@ -21,6 +21,11 @@ class FacebookID(models.Model):
 		verbose_name=_(u'使用者的 FB ID'),
 		help_text=_(u'使用者的 FB ID')
 	)
+	create = models.DateTimeField(
+		verbose_name=_(u'建立時間'),
+		auto_now_add=True,
+		auto_now=False,
+	)
 
 	def __unicode__(self):
 		return self.fb_id
@@ -36,6 +41,7 @@ class FacebookID(models.Model):
 		return super(FacebookID, self).save(*args, **kwargs)
 
 	class Meta:
-		verbose_name = _(u'Facebook ID')
-		verbose_name_plural = _(u'Facebook IDs')
+		ordering = ('-create',)
+		verbose_name = _(u'Facebook 使用者')
+		verbose_name_plural = _(u'Facebook 使用者')
 		unique_together = ('fb_id',)

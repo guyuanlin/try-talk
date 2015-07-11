@@ -6,4 +6,4 @@ from . import models
 class FacebookIDAdmin(admin.ModelAdmin):
 
 	list_display = ('fb_id', 'user')
-	readonly_fields = ('fb_id', 'user')
+	readonly_fields = ('fb_id', 'user', 'create')
