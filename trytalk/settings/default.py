@@ -44,6 +44,7 @@ INSTALLED_APPS = (
 	'fb_accounts',
 	'twitter_accounts',
 	'mobile_notifications',
+	'questions',
 )
 
 MIDDLEWARE_CLASSES = (
