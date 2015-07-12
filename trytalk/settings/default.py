@@ -95,4 +95,22 @@ USE_TZ = True
 # Static files (CSS, JavaScript, Images)
 # https://docs.djangoproject.com/en/1.6/howto/static-files/
 
+STATICFILES_STORAGE = 'whitenoise.django.GzipManifestStaticFilesStorage'
+STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 STATIC_URL = '/static/'
+STATICFILES_DIRS = []
+
+
+# REST Framework settings
+REST_FRAMEWORK = {
+	'DEFAULT_PERMISSION_CLASSES': (
+		'rest_framework.permissions.IsAuthenticated',
+	),
+	'DEFAULT_AUTHENTICATION_CLASSES': (
+		'rest_framework.authentication.SessionAuthentication',
+		'rest_framework.authentication.TokenAuthentication',
+	),
+	'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.LimitOffsetPagination',
+	'PAGE_SIZE': 20,
+	'DATETIME_FORMAT': '%Y-%m-%dT%H:%M:%S',
+}

@@ -35,9 +35,15 @@ class Tag(models.Model):
 		verbose_name_plural = _(u'標籤')
 
 
+class QuestionManager(models.GeoManager):
+
+	def active(self):
+		return Question.objects.filter(is_active=True)
+
+
 class Question(models.Model):
 
-	objects = models.GeoManager()
+	objects = QuestionManager()
 
 	owner = models.ForeignKey(
 		settings.AUTH_USER_MODEL,

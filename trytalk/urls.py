@@ -8,12 +8,14 @@ from accounts import views as accounts_views
 from fb_accounts import views as fb_accounts_views
 from twitter_accounts import views as twitter_accounts_views
 from mobile_notifications import views as mobile_notifications_views
+from questions import views as questions_views
 
 router = routers.DefaultRouter()
 router.register(r'accounts/guest', accounts_views.GuestUserViewSet)
 router.register(r'accounts/facebook', fb_accounts_views.FacebookUserViewSet)
 router.register(r'accounts/twitter', twitter_accounts_views.TwitterUserViewSet)
 router.register(r'mobile_notifications/ios', mobile_notifications_views.IOSDeviceViewSet)
+# router.register(r'questions', questions_views.QuestionViewSet)
 
 urlpatterns = patterns(
 	'',
