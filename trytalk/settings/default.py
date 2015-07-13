@@ -45,6 +45,7 @@ INSTALLED_APPS = (
 	'twitter_accounts',
 	'mobile_notifications',
 	'questions',
+	'request',
 )
 
 MIDDLEWARE_CLASSES = (

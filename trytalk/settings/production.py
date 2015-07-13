@@ -13,3 +13,13 @@ DATABASES = {
 		'PORT': '5432',
 	 }
 }
+
+# settings for request application
+# REQUEST_IGNORE_PATHS = (
+# 	r'^admin/',
+# )
+REQUEST_ONLY_ERRORS = True
+REQUEST_HEAD_FIELDS = [
+	'HTTP_AUTHORIZATION',
+	'CONTENT_TYPE',
+]
