@@ -26,7 +26,7 @@ class GuestUserViewSet(viewsets.GenericViewSet):
 	@list_route(methods=['post'])
 	def login(self, request):
 		"""
-		試用者登入
+		試用者登入(不需Token)
 
 		首次登入時 guest_id 請填入空值，登入後，後端會生成一組唯一 ID 用來識別此試用者<br>
 		若登出後，再次使用試用者身份登入的話，請將前次取得的 guest_id 輸入 guest_id<br>

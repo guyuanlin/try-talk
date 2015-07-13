@@ -29,7 +29,7 @@ class TwitterUserViewSet(viewsets.GenericViewSet):
 	@list_route(methods=['post'])
 	def login(self, request):
 		"""
-		Twitter 登入
+		Twitter 登入(不需Token)
 		
 		---
 		response_serializer: serializers.LoginSerializer

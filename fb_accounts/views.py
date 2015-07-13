@@ -29,7 +29,7 @@ class FacebookUserViewSet(viewsets.GenericViewSet):
 	@list_route(methods=['post'])
 	def login(self, request):
 		"""
-		Facebook 登入
+		Facebook 登入(不需Token)
 		
 		---
 		response_serializer: serializers.LoginSerializer
