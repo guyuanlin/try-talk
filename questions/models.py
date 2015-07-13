@@ -25,10 +25,11 @@ class Tag(models.Model):
 		max_length=50,
 		verbose_name=_(u'標籤名稱'),
 		unique=True,
+		blank=False,
 	)
 
 	def __unicode__(self):
-		return name
+		return self.name
 
 	class Meta:
 		verbose_name = _(u'標籤')

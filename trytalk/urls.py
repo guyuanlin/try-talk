@@ -15,7 +15,7 @@ router.register(r'accounts/guest', accounts_views.GuestUserViewSet)
 router.register(r'accounts/facebook', fb_accounts_views.FacebookUserViewSet)
 router.register(r'accounts/twitter', twitter_accounts_views.TwitterUserViewSet)
 router.register(r'mobile_notifications/ios', mobile_notifications_views.IOSDeviceViewSet)
-# router.register(r'questions', questions_views.QuestionViewSet)
+router.register(r'questions', questions_views.QuestionViewSet)
 
 urlpatterns = patterns(
 	'',
