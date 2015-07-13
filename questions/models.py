@@ -23,7 +23,7 @@ class Tag(models.Model):
 
 	name = models.CharField(
 		max_length=50,
-		verbose_name=_(u'標籤名稱'),
+		verbose_name=_(u'關鍵字'),
 		unique=True,
 		blank=False,
 	)
@@ -32,8 +32,8 @@ class Tag(models.Model):
 		return self.name
 
 	class Meta:
-		verbose_name = _(u'標籤')
-		verbose_name_plural = _(u'標籤')
+		verbose_name = _(u'關鍵字')
+		verbose_name_plural = _(u'關鍵字')
 
 
 class QuestionManager(models.GeoManager):
