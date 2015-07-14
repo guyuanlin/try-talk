@@ -30,7 +30,7 @@ class GuestUserViewSet(viewsets.GenericViewSet):
 
 		首次登入時 guest_id 請填入空值，登入後，後端會生成一組唯一 ID 用來識別此試用者<br>
 		若登出後，再次使用試用者身份登入的話，請將前次取得的 guest_id 輸入 guest_id<br>
-		以便讓後台可是別此使用者，將他先前輸入的資料撈出來呈現<br> 
+		以便讓後台可識別此使用者，將他先前輸入的資料撈出來呈現<br> 
 		---
 		response_serializer: serializers.LoginSerializer
 		parameters:
