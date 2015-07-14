@@ -14,6 +14,17 @@ DATABASES = {
 	 }
 }
 
+# Honor the 'X-Forwarded-Proto' header for request.is_secure()
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
+# Allow all host headers
+ALLOWED_HOSTS = ['*']
+
+SERVER_EMAIL = 'django@trytalk'
+ADMINS = (
+	('Eric', 'eric@bravebot.com'),
+)
+
 # settings for request application
 # REQUEST_IGNORE_PATHS = (
 # 	r'^admin/',
