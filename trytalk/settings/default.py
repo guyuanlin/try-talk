@@ -40,12 +40,12 @@ INSTALLED_APPS = (
 	'rest_framework',
 	'rest_framework.authtoken',
 	'rest_framework_swagger',
+	'request',
 	'accounts',
 	'fb_accounts',
 	'twitter_accounts',
 	'mobile_notifications',
 	'questions',
-	'request',
 )
 
 MIDDLEWARE_CLASSES = (
@@ -55,6 +55,7 @@ MIDDLEWARE_CLASSES = (
 	'django.contrib.auth.middleware.AuthenticationMiddleware',
 	'django.contrib.messages.middleware.MessageMiddleware',
 	'django.middleware.clickjacking.XFrameOptionsMiddleware',
+	'request.middleware.RequestMiddleware',
 )
 
 AUTHENTICATION_BACKENDS = (
