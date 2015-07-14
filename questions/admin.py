@@ -21,16 +21,16 @@ class ReplyInline(admin.TabularInline):
 @admin.register(models.Question)
 class QuestionAdmin(admin.ModelAdmin):
 
-	list_display = ('content', 'category', 'create')
+	list_display = ('content', 'category', 'reply_count', 'update')
 	fields = (
 		'owner', 'category', 'content', 'location',
-		'tags', 'create', 'update', 'is_active',
+		'tags', 'reply_count', 'create', 'update', 'is_active',
 	)
 	# readonly_fields = (
 	# 	'owner', 'category', 'content', 'location',
 	# 	'tags', 'create', 'update', 'is_active',
 	# )
-	readonly_fields = ('create', 'update')
+	readonly_fields = ('create', 'update', 'reply_count')
 	date_hierarchy = 'create'
 	filter_horizontal = ('tags',)
 	list_filter = ('category',)

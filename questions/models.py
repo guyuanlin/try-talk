@@ -3,6 +3,9 @@ from django.contrib.gis.db import models
 from django.conf import settings
 from django.core.validators import MaxLengthValidator
 from django.utils.translation import ugettext_lazy as _
+from django.db.models.signals import post_save, pre_delete
+from django.db.models import F
+from django.dispatch import receiver
 
 
 FOOD = 'food'
@@ -53,18 +56,25 @@ class Question(models.Model):
 	category = models.CharField(
 		max_length=30,
 		verbose_name=_(u'分類'),
+		help_text=_(u'問題分類'),
 		choices=CATEGORIES,
 	)
 	content = models.TextField(
 		verbose_name=_(u'內容'),
+		help_text=_(u'內容'),
 		validators=[MaxLengthValidator(CONTENT_MAX_LENGTH)],
 	)
 	location = models.PointField(
 		verbose_name=_(u'發問位置'),
+		help_text=_(u'發問位置'),
 	)
 	tags = models.ManyToManyField(
 		Tag,
 		verbose_name=_(u'標籤'),
+	)
+	reply_count = models.IntegerField(
+		verbose_name=_(u'回覆數'),
+		default=0,
 	)
 	is_active = models.BooleanField(
 		verbose_name=_(u'有效'),
@@ -135,3 +145,18 @@ class Reply(models.Model):
 	class Meta:
 		verbose_name = _(u'問題回覆')
 		verbose_name_plural = _(u'問題回覆')
+
+
+@receiver(post_save, sender=Reply)
+def save_reply_receiver(sender, instance=None, created=False, **kwargs):
+	if created:
+		question = instance.question
+		question.reply_count = F('reply_count') + 1
+		question.save()
+
+
+@receiver(pre_delete, sender=Reply)
+def delete_reply_receiver(sender, instance=None, **kwargs):
+	question = instance.question
+	question.reply_count = F('reply_count') - 1
+	question.save()

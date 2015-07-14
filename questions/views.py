@@ -3,16 +3,19 @@ import sys
 reload(sys)
 sys.setdefaultencoding('utf-8')
 
-from rest_framework import viewsets, mixins
+from rest_framework import viewsets, mixins, filters
 
 from . import models, serializers
 
 class QuestionViewSet(mixins.CreateModelMixin,
-				 	  viewsets.GenericViewSet):
+					  mixins.ListModelMixin,
+					  viewsets.GenericViewSet):
 
 	model = models.Question
 	queryset = models.Question.objects.active()
 	serializer_class = serializers.QuestionSerializer
+	filter_backends = (filters.OrderingFilter,)
+	ordering_fields = ('update', 'reply_count')
 
 	def perform_create(self, serializer):
 		serializer.save(owner=self.request.user)
@@ -45,7 +48,7 @@ class QuestionViewSet(mixins.CreateModelMixin,
 			  description: 問題分類
 			  required: True
 			  type: choice
-			  enum: ['food', 'service', 'navigation', 'others']
+			  enum: ['food', 'shop', 'location', 'other']
 			  paramType: form
 			- name: content
 			  description: 問題內容(字數上限為 500 字)
@@ -54,6 +57,7 @@ class QuestionViewSet(mixins.CreateModelMixin,
 			  paramType: form
 			- name: location
 			  description: 發問位置，字串格式為"POINT($longtitude $latitude)"，例如 POINT(121.517553 25.046283)
+			  defaultValue: POINT(121.517553 25.046283)
 			  required: True
 			  type: string
 			  paramType: form
@@ -70,3 +74,45 @@ class QuestionViewSet(mixins.CreateModelMixin,
 			  message: 輸入的參數有錯誤，將有錯誤的欄位與訊息個別回報
 		"""
 		return super(QuestionViewSet, self).create(request, *args, **kwargs)
+
+	def list(self, request, *args, **kwargs):
+		"""
+		問題列表
+		
+		---
+		response_serializer: serializers.QuestionSerializer
+
+		parameters:
+			- name: location
+			  description: 所在位置，字串格式為"POINT($longtitude $latitude)"，例如 POINT(121.517553 25.046283)
+			  defaultValue: POINT(121.517553 25.046283)
+			  required: True
+			  type: string
+			  paramType: query
+			- name: offset
+			  description: 資料起始 index，從 0 開始
+			  defaultValue: 0
+			  required: false
+			  type: integer
+			  paramType: query
+			- name: limit
+			  description: 每次撈取的問題數量
+			  defaultValue: 20
+			  required: false
+			  type: integer
+			  paramType: query
+			- name: ordering
+			  defaultValue: distance
+			  description: 排序方法：distance(距離排序), -update(時間排序), -reply_count(回覆數排序)
+			  required: false
+			  enum: [distance, -update, -reply_count]
+			  type: string
+			  paramType: query
+
+		responseMessages:
+			- code: 200
+			  message: 執行成功
+			- code: 400
+			  message: 輸入的參數有錯誤，將有錯誤的欄位與訊息個別回報
+		"""
+		return super(QuestionViewSet, self).list(request, *args, **kwargs)
