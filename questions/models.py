@@ -6,14 +6,14 @@ from django.utils.translation import ugettext_lazy as _
 
 
 FOOD = 'food'
-SERVICE = 'service'
-NAVIGATION = 'navigation'
-OTHERS = 'others'
+SHOP = 'shop'
+LOCATION = 'location'
+OTHER = 'other'
 CATEGORIES = (
 	(FOOD, FOOD),
-	(SERVICE, SERVICE),
-	(NAVIGATION, NAVIGATION),
-	(OTHERS, OTHERS),
+	(SHOP, SHOP),
+	(LOCATION, LOCATION),
+	(OTHER, OTHER),
 )
 
 CONTENT_MAX_LENGTH = 500

@@ -23,7 +23,6 @@ MAX_TAG_COUNT = 4
 
 class QuestionSerializer(GeoModelSerializer):
 
-	# tags = TagSerializer(many=True)
 	tags = TagSlugRelatedField(
 		many=True,
 		slug_field='name',
