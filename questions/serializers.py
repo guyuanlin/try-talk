@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 from django.utils.translation import ugettext_lazy as _
 from django.utils import timezone
+from django.contrib.gis.geos import fromstr
 
 from rest_framework import serializers
 from rest_framework_gis.serializers import GeoModelSerializer
@@ -21,6 +22,7 @@ class TagSlugRelatedField(serializers.SlugRelatedField):
 
 
 MAX_TAG_COUNT = 4
+GEOS_SRID = 4326
 
 class QuestionSerializer(GeoModelSerializer):
 
@@ -40,6 +42,9 @@ class QuestionSerializer(GeoModelSerializer):
 	)
 	time_info = serializers.SerializerMethodField(
 		help_text=_(u'時間資訊，型別為 JSON object，包含 time(string) 與 display(string) 欄位'),
+	)
+	distance_info = serializers.SerializerMethodField(
+		help_text=_(u'距離資訊，型別為 JSON object，包含 distance(integer, 單位為公里) 與 display(string) 欄位'),
 	)
 
 	def validate_tags(self, value):
@@ -64,6 +69,21 @@ class QuestionSerializer(GeoModelSerializer):
 			'display': display,
 		}
 
+	def get_distance_info(self, obj):
+		location_str = self.context['request'].query_params['location']
+		location_pnt = fromstr(location_str, srid=GEOS_SRID)
+		distance = location_pnt.distance(obj.location) * 100.0
+
+		if distance < 1.0:
+			display = _(u'距離%(distance)d公尺') % {'distance': int(distance * 1000.0)}
+		else:
+			display = _(u'距離%(distance)d公里') % {'distance': int(distance)}
+
+		return {
+			'distance': distance,
+			'display': display,
+		}
+
 	class Meta:
 		model = models.Question
-		fields = ('id', 'category', 'content', 'location', 'tags', 'reply_count', 'time_info')
+		fields = ('id', 'category', 'content', 'location', 'tags', 'reply_count', 'time_info', 'distance_info')
