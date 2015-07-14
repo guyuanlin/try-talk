@@ -63,7 +63,7 @@ class QuestionViewSet(mixins.CreateModelMixin,
 			  paramType: form
 			- name: tags
 			  description: 關鍵字，若有多個關鍵字，送出 request 時，可送出多個以 "tags" 為 key 的欄位，最多 4 個關鍵字
-			  required: True
+			  required: False
 			  type: string
 			  paramType: form
 
@@ -83,8 +83,8 @@ class QuestionViewSet(mixins.CreateModelMixin,
 		response_serializer: serializers.QuestionSerializer
 
 		parameters:
-			- name: location
-			  description: 所在位置，字串格式為"POINT($longtitude $latitude)"，例如 POINT(121.517553 25.046283)
+			- name: user_location
+			  description: 使用者所在位置，字串格式為"POINT($longtitude $latitude)"，例如 POINT(121.517553 25.046283)
 			  defaultValue: POINT(121.517553 25.046283)
 			  required: True
 			  type: string

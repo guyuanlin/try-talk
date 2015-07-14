@@ -22,7 +22,7 @@ ALLOWED_HOSTS = ['*']
 
 SERVER_EMAIL = 'django@trytalk'
 ADMINS = (
-	('Eric', 'eric@bravebot.com'),
+	('Eric Lin', 'lin.guyuan@gmail.com'),
 )
 
 # settings for request application
