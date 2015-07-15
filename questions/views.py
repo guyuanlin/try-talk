@@ -3,6 +3,7 @@ import sys
 reload(sys)
 sys.setdefaultencoding('utf-8')
 
+from django.contrib.gis.geos import fromstr
 from rest_framework import viewsets, mixins, filters
 
 from . import models, serializers
@@ -16,6 +17,14 @@ class QuestionViewSet(mixins.CreateModelMixin,
 	serializer_class = serializers.QuestionSerializer
 	filter_backends = (filters.OrderingFilter,)
 	ordering_fields = ('update', 'reply_count')
+
+	def get_queryset(self):
+		if self.request.method == 'GET':
+			ordering = self.request.query_params.get('ordering', 'distance')
+			if ordering == 'distance':
+				user_location = fromstr(self.request.query_params['user_location'])
+				return models.Question.objects.active().distance(user_location).order_by('distance')
+		return models.Question.objects.active()
 
 	def perform_create(self, serializer):
 		serializer.save(owner=self.request.user)
@@ -103,7 +112,7 @@ class QuestionViewSet(mixins.CreateModelMixin,
 			  paramType: query
 			- name: ordering
 			  defaultValue: distance
-			  description: 排序方法：distance(距離排序), -update(時間排序), -reply_count(回覆數排序)
+			  description: 排序方法：distance(距離排序), -update(更新時間排序), -reply_count(回覆數排序)
 			  required: false
 			  enum: [distance, -update, -reply_count]
 			  type: string

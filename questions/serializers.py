@@ -57,14 +57,17 @@ class QuestionSerializer(GeoModelSerializer):
 		update_time = obj.update
 		now = timezone.now()
 		delta = now - update_time
-		if delta.days > 0:
-			display = _(u'%(days)d天前發布') % {'days': delta.days}
+		
+		if delta.days > 30:
+			display = _(u'%(months)d月前更新') % {'months': (delta.days / 30)}
+		elif delta.days > 0:
+			display = _(u'%(days)d天前更新') % {'days': delta.days}
 		elif delta.seconds > 3600:
-			display = _(u'%(hours)d小時前發布') % {'hours': (delta.seconds / 3600)}
+			display = _(u'%(hours)d小時前更新') % {'hours': (delta.seconds / 3600)}
 		elif delta.seconds > 60:
-			display = _(u'%(minutes)d分鐘前發布') % {'minutes': (delta.seconds / 60)}
+			display = _(u'%(minutes)d分鐘前更新') % {'minutes': (delta.seconds / 60)}
 		else:
-			display = _(u'%(seconds)d秒前發布') % {'seconds': delta.seconds}
+			display = _(u'%(seconds)d秒前更新') % {'seconds': delta.seconds}
 		return {
 			'time': update_time,
 			'display': display,
