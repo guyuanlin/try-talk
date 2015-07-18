@@ -26,7 +26,8 @@ class LoginSerializer(IOSRegIDMixin, serializers.ModelSerializer):
 	)
 	reg_id = serializers.CharField(
 		write_only=True,
-		allow_blank=True,
+		allow_blank=False,
+		allow_null=False,
 		required=False,
 		help_text=_(u'裝置註冊序號')
 	)

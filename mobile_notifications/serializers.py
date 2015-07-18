@@ -21,6 +21,15 @@ class IOSRegIDMixin(object):
 				raise serializers.ValidationError(msg)
 		return value
 
+	def validate(self, data):
+		device_type = data.get('device_type', None)
+		reg_id = data.get('reg_id', None)
+
+		if bool(device_type) ^ bool(reg_id):
+			msg = _(u'device_type 與 reg_id 必須同時設定，不能只設定其中一個')
+			raise serializers.ValidationError(msg)
+		return data
+
 
 class IOSDeviceSerializer(IOSRegIDMixin, serializers.ModelSerializer):
 

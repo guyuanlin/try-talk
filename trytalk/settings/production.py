@@ -5,7 +5,7 @@ import os
 # Using SpatialLite backend
 DATABASES = {
 	'default': {
-		'ENGINE': 'django.contrib.gis.db.backends.postgis',
+		'ENGINE': 'django.db.backends.postgresql_psycopg2',
 		'NAME': 'trytalk',
 		'USER': os.environ.get('DATABASE_USER'),
 		'PASSWORD': os.environ.get('DATABASE_PASSWORD'),
