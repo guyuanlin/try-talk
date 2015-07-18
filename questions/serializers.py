@@ -23,7 +23,7 @@ class TagSlugRelatedField(serializers.SlugRelatedField):
 
 MAX_TAG_COUNT = 4
 GEOS_SRID = 4326
-USER_LOCATION_KEY = 'user_location'
+USER_LOCATION_KEY = 'location'
 
 class QuestionSerializer(GeoModelSerializer):
 
@@ -75,7 +75,7 @@ class QuestionSerializer(GeoModelSerializer):
 
 	def get_distance_info(self, obj):
 		if USER_LOCATION_KEY in self.context['request'].query_params:
-			location_str = self.context['request'].query_params['user_location']
+			location_str = self.context['request'].query_params[USER_LOCATION_KEY]
 			location_pnt = fromstr(location_str, srid=GEOS_SRID)
 			distance = location_pnt.distance(obj.location) * 100.0
 		else:

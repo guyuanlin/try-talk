@@ -4,7 +4,9 @@ reload(sys)
 sys.setdefaultencoding('utf-8')
 
 from django.contrib.gis.geos import fromstr
-from rest_framework import viewsets, mixins, filters
+from django.utils.translation import ugettext as _
+from rest_framework import viewsets, mixins, filters, status
+from rest_framework.response import Response
 
 from . import models, serializers
 
@@ -22,7 +24,7 @@ class QuestionViewSet(mixins.CreateModelMixin,
 		if self.request.method == 'GET':
 			ordering = self.request.query_params.get('ordering', 'distance')
 			if ordering == 'distance':
-				user_location = fromstr(self.request.query_params['user_location'])
+				user_location = fromstr(self.request.query_params[serializers.USER_LOCATION_KEY])
 				return models.Question.objects.active().distance(user_location).order_by('distance')
 		return models.Question.objects.active()
 
@@ -92,7 +94,7 @@ class QuestionViewSet(mixins.CreateModelMixin,
 		response_serializer: serializers.QuestionSerializer
 
 		parameters:
-			- name: user_location
+			- name: location
 			  description: 使用者所在位置，字串格式為"POINT($longtitude $latitude)"，例如 POINT(121.517553 25.046283)
 			  defaultValue: POINT(121.517553 25.046283)
 			  required: True
@@ -124,4 +126,17 @@ class QuestionViewSet(mixins.CreateModelMixin,
 			- code: 400
 			  message: 輸入的參數有錯誤，將有錯誤的欄位與訊息個別回報
 		"""
+		if serializers.USER_LOCATION_KEY not in request.query_params:
+			errors = {
+				'detail': _(u'必須設定 location 參數')
+			}
+			return Response(errors, status=status.HTTP_400_BAD_REQUEST)
+		else:
+			try:
+				fromstr(self.request.query_params[serializers.USER_LOCATION_KEY])
+			except:
+				errors = {
+					'detail': _(u'location 格式錯誤，正確格式為 POINT($longtitude $latitude)')
+				}
+				return Response(errors, status=status.HTTP_400_BAD_REQUEST)
 		return super(QuestionViewSet, self).list(request, *args, **kwargs)
