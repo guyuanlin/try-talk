@@ -107,10 +107,19 @@ class ReplySerializer(TimeInfoMixin, serializers.ModelSerializer):
 	time_info = serializers.SerializerMethodField(
 		help_text=_(u'時間資訊，型別為 JSON object，包含 time(string) 與 display(string) 欄位'),
 	)
+	can_delete = serializers.SerializerMethodField(
+		help_text=_(u'標示登入使用者是否可以刪除此回覆')
+	)
 
 	def get_like_count(self, obj):
 		return obj.like_count()
 
+	def get_can_delete(self, obj):
+		login_user = self.context['request'].user
+		if login_user.pk == obj.question.owner.pk or login_user.pk == obj.user.pk:
+			return True
+		return False
+
 	class Meta:
 		model = models.Reply
-		fields = ('id', 'content', 'like_count', 'time_info')
+		fields = ('id', 'content', 'like_count', 'time_info', 'can_delete')

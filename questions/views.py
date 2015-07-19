@@ -187,10 +187,22 @@ class QuestionViewSet(mixins.CreateModelMixin,
 
 		page = self.paginate_queryset(queryset)
 		if page is not None:
-			serializer = serializers.ReplySerializer(page, many=True)
+			serializer = serializers.ReplySerializer(
+				page,
+				many=True,
+				context={
+					'request': request
+				}
+			)
 			return self.get_paginated_response(serializer.data)
 
-		serializer = serializers.ReplySerializer(queryset, many=True)
+		serializer = serializers.ReplySerializer(
+			queryset,
+			many=True,
+			context={
+				'request': request
+			}
+		)
 		return Response(serializer.data)
 
 	@detail_route(methods=['post'])
@@ -214,7 +226,12 @@ class QuestionViewSet(mixins.CreateModelMixin,
 			  message: 輸入的參數有錯誤，將有錯誤的欄位與訊息個別回報
 		"""
 		question = self.get_object()
-		serializer = serializers.ReplySerializer(data=request.data)
+		serializer = serializers.ReplySerializer(
+			data=request.data,
+			context={
+				'request': request
+			}
+		)
 		serializer.is_valid(raise_exception=True)
 		serializer.save(
 			user=request.user,
