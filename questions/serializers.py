@@ -21,11 +21,34 @@ class TagSlugRelatedField(serializers.SlugRelatedField):
 			self.fail('invalid')
 
 
+class TimeInfoMixin(object):
+
+	def get_time_info(self, obj):
+		update_time = obj.update
+		now = timezone.now()
+		delta = now - update_time
+		
+		if delta.days > 30:
+			display = _(u'%(months)d月前更新') % {'months': (delta.days / 30)}
+		elif delta.days > 0:
+			display = _(u'%(days)d天前更新') % {'days': delta.days}
+		elif delta.seconds > 3600:
+			display = _(u'%(hours)d小時前更新') % {'hours': (delta.seconds / 3600)}
+		elif delta.seconds > 60:
+			display = _(u'%(minutes)d分鐘前更新') % {'minutes': (delta.seconds / 60)}
+		else:
+			display = _(u'%(seconds)d秒前更新') % {'seconds': delta.seconds}
+		return {
+			'time': update_time,
+			'display': display,
+		}
+
+
 MAX_TAG_COUNT = 4
 GEOS_SRID = 4326
 USER_LOCATION_KEY = 'location'
 
-class QuestionSerializer(GeoModelSerializer):
+class QuestionSerializer(TimeInfoMixin, GeoModelSerializer):
 
 	id = serializers.IntegerField(
 		read_only=True,
@@ -53,26 +76,6 @@ class QuestionSerializer(GeoModelSerializer):
 			raise serializers.ValidationError(_(u'關鍵字不能多於 4 個'))
 		return value
 
-	def get_time_info(self, obj):
-		update_time = obj.update
-		now = timezone.now()
-		delta = now - update_time
-		
-		if delta.days > 30:
-			display = _(u'%(months)d月前更新') % {'months': (delta.days / 30)}
-		elif delta.days > 0:
-			display = _(u'%(days)d天前更新') % {'days': delta.days}
-		elif delta.seconds > 3600:
-			display = _(u'%(hours)d小時前更新') % {'hours': (delta.seconds / 3600)}
-		elif delta.seconds > 60:
-			display = _(u'%(minutes)d分鐘前更新') % {'minutes': (delta.seconds / 60)}
-		else:
-			display = _(u'%(seconds)d秒前更新') % {'seconds': delta.seconds}
-		return {
-			'time': update_time,
-			'display': display,
-		}
-
 	def get_distance_info(self, obj):
 		if USER_LOCATION_KEY in self.context['request'].query_params:
 			location_str = self.context['request'].query_params[USER_LOCATION_KEY]
@@ -94,3 +97,20 @@ class QuestionSerializer(GeoModelSerializer):
 	class Meta:
 		model = models.Question
 		fields = ('id', 'category', 'content', 'location', 'tags', 'reply_count', 'time_info', 'distance_info')
+
+
+class ReplySerializer(TimeInfoMixin, serializers.ModelSerializer):
+
+	like_count = serializers.SerializerMethodField(
+		help_text=_(u'按讚數')
+	)
+	time_info = serializers.SerializerMethodField(
+		help_text=_(u'時間資訊，型別為 JSON object，包含 time(string) 與 display(string) 欄位'),
+	)
+
+	def get_like_count(self, obj):
+		return obj.like_count()
+
+	class Meta:
+		model = models.Reply
+		fields = ('id', 'content', 'like_count', 'time_info')

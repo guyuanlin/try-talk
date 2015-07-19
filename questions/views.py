@@ -7,6 +7,7 @@ from django.contrib.gis.geos import fromstr
 from django.utils.translation import ugettext as _
 from rest_framework import viewsets, mixins, filters, status
 from rest_framework.response import Response
+from rest_framework.decorators import detail_route
 
 from . import models, serializers
 
@@ -21,11 +22,6 @@ class QuestionViewSet(mixins.CreateModelMixin,
 	ordering_fields = ('update', 'reply_count')
 
 	def get_queryset(self):
-		if self.request.method == 'GET':
-			ordering = self.request.query_params.get('ordering', 'distance')
-			if ordering == 'distance':
-				user_location = fromstr(self.request.query_params[serializers.USER_LOCATION_KEY])
-				return models.Question.objects.active().distance(user_location).order_by('distance')
 		return models.Question.objects.active()
 
 	def perform_create(self, serializer):
@@ -131,12 +127,63 @@ class QuestionViewSet(mixins.CreateModelMixin,
 				'detail': _(u'必須設定 location 參數')
 			}
 			return Response(errors, status=status.HTTP_400_BAD_REQUEST)
-		else:
+			
+		ordering = self.request.query_params.get('ordering', 'distance')
+		if ordering == 'distance':
 			try:
-				fromstr(self.request.query_params[serializers.USER_LOCATION_KEY])
+				user_location = fromstr(self.request.query_params[serializers.USER_LOCATION_KEY])
 			except:
 				errors = {
 					'detail': _(u'location 格式錯誤，正確格式為 POINT($longtitude $latitude)')
 				}
 				return Response(errors, status=status.HTTP_400_BAD_REQUEST)
-		return super(QuestionViewSet, self).list(request, *args, **kwargs)
+			queryset = models.Question.objects.active().distance(user_location).order_by('distance')
+		else:
+			queryset = self.filter_queryset(self.get_queryset())
+		page = self.paginate_queryset(queryset)
+		if page is not None:
+			serializer = self.get_serializer(page, many=True)
+			return self.get_paginated_response(serializer.data)
+
+		serializer = self.get_serializer(queryset, many=True)
+		return Response(serializer.data)
+			
+
+	@detail_route(methods=['get'])
+	def replys(self, request, *args, **kwargs):
+		"""
+		回覆列表
+		
+		---
+		response_serializer: serializers.ReplySerializer
+
+		parameters:
+			- name: offset
+			  description: 資料起始 index，從 0 開始
+			  defaultValue: 0
+			  required: false
+			  type: integer
+			  paramType: query
+			- name: limit
+			  description: 每次撈取的問題數量
+			  defaultValue: 20
+			  required: false
+			  type: integer
+			  paramType: query
+
+		responseMessages:
+			- code: 200
+			  message: 執行成功
+			- code: 400
+			  message: 輸入的參數有錯誤，將有錯誤的欄位與訊息個別回報
+		"""
+		question = self.get_object()
+		queryset = question.replys.all().order_by('-update')
+
+		page = self.paginate_queryset(queryset)
+		if page is not None:
+			serializer = serializers.ReplySerializer(page, many=True)
+			return self.get_paginated_response(serializer.data)
+
+		serializer = serializers.ReplySerializer(queryset, many=True)
+		return Response(serializer.data)
