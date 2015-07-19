@@ -158,6 +158,11 @@ class QuestionViewSet(mixins.CreateModelMixin,
 		response_serializer: serializers.ReplySerializer
 
 		parameters:
+			- name: pk
+			  description: 問題 ID
+			  required: True
+			  type: integer
+			  paramType: path
 			- name: offset
 			  description: 資料起始 index，從 0 開始
 			  defaultValue: 0
@@ -187,3 +192,33 @@ class QuestionViewSet(mixins.CreateModelMixin,
 
 		serializer = serializers.ReplySerializer(queryset, many=True)
 		return Response(serializer.data)
+
+	@detail_route(methods=['post'])
+	def reply(self, request, *args, **kwargs):
+		"""
+		新增回覆
+		---
+		serializer: serializers.ReplySerializer
+
+		parameters:
+			- name: pk
+			  description: 問題 ID
+			  required: True
+			  type: integer
+			  paramType: path
+
+		responseMessages:
+			- code: 200
+			  message: 執行成功
+			- code: 400
+			  message: 輸入的參數有錯誤，將有錯誤的欄位與訊息個別回報
+		"""
+		question = self.get_object()
+		serializer = serializers.ReplySerializer(data=request.data)
+		serializer.is_valid(raise_exception=True)
+		serializer.save(
+			user=request.user,
+			question=question,
+		)
+		headers = self.get_success_headers(serializer.data)
+		return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
