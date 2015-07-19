@@ -13,6 +13,7 @@ from . import models, serializers
 
 class QuestionViewSet(mixins.CreateModelMixin,
 					  mixins.ListModelMixin,
+					  mixins.DestroyModelMixin,
 					  viewsets.GenericViewSet):
 
 	model = models.Question
@@ -239,3 +240,71 @@ class QuestionViewSet(mixins.CreateModelMixin,
 		)
 		headers = self.get_success_headers(serializer.data)
 		return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+
+	def destroy(self, request, *args, **kwargs):
+		"""
+		刪除問題
+		---
+		omit_serializer: True
+
+		parameters:
+			- name: pk
+			  description: 問題 ID
+			  required: True
+			  type: integer
+			  paramType: path
+
+		responseMessages:
+			- code: 204
+			  message: 刪除成功
+			- code: 400
+			  message: 輸入的參數有錯誤，將有錯誤的欄位與訊息個別回報
+			- code: 404
+			  message: 問題 ID 不存在
+		"""
+		question = self.get_object()
+		if question.owner.pk != request.user.pk:
+			errors = {
+				'detail': _(u'您無權限刪除此問題')
+			}
+			return Response(errors, status=status.HTTP_400_BAD_REQUEST)
+
+		return super(QuestionViewSet, self).destroy(request, *args, **kwargs)
+
+
+class ReplyViewSet(mixins.DestroyModelMixin,
+				   viewsets.GenericViewSet):
+
+	model = models.Reply
+	queryset = models.Reply.objects.active()
+	serializer_class = serializers.ReplySerializer
+
+	def destroy(self, request, *args, **kwargs):
+		"""
+		刪除回覆
+		---
+		omit_serializer: True
+
+		parameters:
+			- name: pk
+			  description: 回覆 ID
+			  required: True
+			  type: integer
+			  paramType: path
+
+		responseMessages:
+			- code: 204
+			  message: 刪除成功
+			- code: 400
+			  message: 輸入的參數有錯誤，將有錯誤的欄位與訊息個別回報
+			- code: 404
+			  message: 回覆 ID 不存在
+		"""
+		reply = self.get_object()
+		if reply.question.owner.pk != request.user.pk or reply.user.pk != request.pk:
+			errors = {
+				'detail': _(u'您無權限刪除此回覆')
+			}
+			return Response(errors, status=status.HTTP_400_BAD_REQUEST)
+
+		return super(ReplyViewSet, self).destroy(request, *args, **kwargs)

@@ -100,7 +100,15 @@ class Question(models.Model):
 		verbose_name_plural = _(u'問題列表')
 
 
+class ReplyManager(models.GeoManager):
+
+	def active(self):
+		return Reply.objects.filter(is_active=True)
+
+
 class Reply(models.Model):
+
+	objects = ReplyManager()
 
 	user = models.ForeignKey(
 		settings.AUTH_USER_MODEL,

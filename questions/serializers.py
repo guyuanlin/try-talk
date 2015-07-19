@@ -70,6 +70,9 @@ class QuestionSerializer(TimeInfoMixin, GeoModelSerializer):
 	distance_info = serializers.SerializerMethodField(
 		help_text=_(u'距離資訊，型別為 JSON object，包含 distance(integer, 單位為公里) 與 display(string) 欄位'),
 	)
+	can_delete = serializers.SerializerMethodField(
+		help_text=_(u'標示登入使用者是否可以刪除此問題')
+	)
 
 	def validate_tags(self, value):
 		if value and len(value) > MAX_TAG_COUNT:
@@ -94,9 +97,19 @@ class QuestionSerializer(TimeInfoMixin, GeoModelSerializer):
 			'display': display,
 		}
 
+	def get_can_delete(self, obj):
+		login_user = self.context['request'].user
+		if login_user.pk == obj.owner.pk:
+			return True
+		return False
+
 	class Meta:
 		model = models.Question
-		fields = ('id', 'category', 'content', 'location', 'tags', 'reply_count', 'time_info', 'distance_info')
+		fields = (
+			'id', 'category', 'content', 'location',
+			'tags', 'reply_count', 'time_info', 'distance_info',
+			'can_delete'
+		)
 
 
 class ReplySerializer(TimeInfoMixin, serializers.ModelSerializer):
