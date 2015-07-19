@@ -301,7 +301,7 @@ class ReplyViewSet(mixins.DestroyModelMixin,
 			  message: 回覆 ID 不存在
 		"""
 		reply = self.get_object()
-		if reply.question.owner.pk != request.user.pk or reply.user.pk != request.user.pk:
+		if reply.question.owner.pk != request.user.pk and reply.user.pk != request.user.pk:
 			errors = {
 				'detail': _(u'您無權限刪除此回覆')
 			}
