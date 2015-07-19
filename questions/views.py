@@ -308,3 +308,67 @@ class ReplyViewSet(mixins.DestroyModelMixin,
 			return Response(errors, status=status.HTTP_400_BAD_REQUEST)
 
 		return super(ReplyViewSet, self).destroy(request, *args, **kwargs)
+
+	@detail_route(methods=['post'])
+	def like(self, request, *args, **kwargs):
+		"""
+		回覆按讚
+		---
+		response_serializer: serializers.ReplySerializer
+
+		omit_parameters:
+        	- form
+		parameters:
+			- name: pk
+			  description: 回覆 ID
+			  required: True
+			  type: integer
+			  paramType: path
+
+		responseMessages:
+			- code: 200
+			  message: 執行成功
+			- code: 404
+			  message: 回覆 ID 不存在
+		"""
+		reply = self.get_object()
+		reply.likes.add(request.user)
+		serializer = serializers.ReplySerializer(
+			reply,
+			context={
+				'request': request
+			}
+		)
+		return Response(serializer.data)
+
+	@detail_route(methods=['post'])
+	def cancel_like(self, request, *args, **kwargs):
+		"""
+		回覆取消按讚
+		---
+		response_serializer: serializers.ReplySerializer
+
+		omit_parameters:
+        	- form
+		parameters:
+			- name: pk
+			  description: 回覆 ID
+			  required: True
+			  type: integer
+			  paramType: path
+
+		responseMessages:
+			- code: 200
+			  message: 執行成功
+			- code: 404
+			  message: 回覆 ID 不存在
+		"""
+		reply = self.get_object()
+		reply.likes.remove(request.user)
+		serializer = serializers.ReplySerializer(
+			reply,
+			context={
+				'request': request
+			}
+		)
+		return Response(serializer.data)
