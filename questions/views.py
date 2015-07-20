@@ -7,7 +7,7 @@ from django.contrib.gis.geos import fromstr
 from django.utils.translation import ugettext as _
 from rest_framework import viewsets, mixins, filters, status
 from rest_framework.response import Response
-from rest_framework.decorators import detail_route
+from rest_framework.decorators import detail_route, list_route
 
 from . import models, serializers
 
@@ -270,6 +270,44 @@ class QuestionViewSet(mixins.CreateModelMixin,
 			return Response(errors, status=status.HTTP_400_BAD_REQUEST)
 
 		return super(QuestionViewSet, self).destroy(request, *args, **kwargs)
+
+	@list_route(methods=['get'])
+	def history(self, request, *args, **kwargs):
+		"""
+		我的提問
+		---
+		response_serializer: serializers.QuestionSerializer
+
+		parameters:
+			- name: offset
+			  description: 資料起始 index，從 0 開始
+			  defaultValue: 0
+			  required: false
+			  type: integer
+			  paramType: query
+			- name: limit
+			  description: 每次撈取的問題數量
+			  defaultValue: 20
+			  required: false
+			  type: integer
+			  paramType: query
+
+		responseMessages:
+			- code: 200
+			  message: 執行成功
+			- code: 400
+			  message: 輸入的參數有錯誤，將有錯誤的欄位與訊息個別回報
+		"""
+		queryset = models.Question.objects.filter(
+			owner=request.user
+		).order_by('-update')
+		page = self.paginate_queryset(queryset)
+		if page is not None:
+			serializer = self.get_serializer(page, many=True)
+			return self.get_paginated_response(serializer.data)
+
+		serializer = self.get_serializer(queryset, many=True)
+		return Response(serializer.data)
 
 
 class ReplyViewSet(mixins.DestroyModelMixin,
