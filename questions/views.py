@@ -309,6 +309,44 @@ class QuestionViewSet(mixins.CreateModelMixin,
 		serializer = self.get_serializer(queryset, many=True)
 		return Response(serializer.data)
 
+	@list_route(methods=['get'])
+	def replied(self, request, *args, **kwargs):
+		"""
+		我的解答
+		---
+		response_serializer: serializers.QuestionSerializer
+
+		parameters:
+			- name: offset
+			  description: 資料起始 index，從 0 開始
+			  defaultValue: 0
+			  required: false
+			  type: integer
+			  paramType: query
+			- name: limit
+			  description: 每次撈取的問題數量
+			  defaultValue: 20
+			  required: false
+			  type: integer
+			  paramType: query
+
+		responseMessages:
+			- code: 200
+			  message: 執行成功
+			- code: 400
+			  message: 輸入的參數有錯誤，將有錯誤的欄位與訊息個別回報
+		"""
+		queryset = models.Question.objects.filter(
+			id__in=models.Question.objects.filter(replys__user=request.user).distinct()
+		).order_by('-update')
+		page = self.paginate_queryset(queryset)
+		if page is not None:
+			serializer = self.get_serializer(page, many=True)
+			return self.get_paginated_response(serializer.data)
+
+		serializer = self.get_serializer(queryset, many=True)
+		return Response(serializer.data)
+
 
 class ReplyViewSet(mixins.DestroyModelMixin,
 				   viewsets.GenericViewSet):
