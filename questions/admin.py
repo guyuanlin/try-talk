@@ -44,3 +44,11 @@ class TagAdmin(admin.ModelAdmin):
 	list_display = ('name',)
 	fields = ('name',)
 	search_fields = ('name',)
+
+
+@admin.register(models.UserLocationHistory)
+class UserLocationHistory(admin.ModelAdmin):
+
+	list_display = ('user', 'location', 'create')
+	fields = ('user', 'location', 'create')
+	readonly_fields = ('user', 'create')

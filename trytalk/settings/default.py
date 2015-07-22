@@ -123,3 +123,6 @@ REST_FRAMEWORK = {
 	'PAGE_SIZE': 20,
 	'DATETIME_FORMAT': '%Y-%m-%dT%H:%M:%S',
 }
+
+# Celery settings
+BROKER_URL = 'amqp://guest:guest@localhost:5672//'

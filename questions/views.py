@@ -130,25 +130,32 @@ class QuestionViewSet(mixins.CreateModelMixin,
 			return Response(errors, status=status.HTTP_400_BAD_REQUEST)
 			
 		ordering = self.request.query_params.get('ordering', 'distance')
-		if ordering == 'distance':
-			try:
-				user_location = fromstr(self.request.query_params[serializers.USER_LOCATION_KEY])
-			except:
-				errors = {
-					'detail': _(u'location 格式錯誤，正確格式為 POINT($longtitude $latitude)')
-				}
-				return Response(errors, status=status.HTTP_400_BAD_REQUEST)
-			queryset = models.Question.objects.active().distance(user_location).order_by('distance')
-		else:
-			queryset = self.filter_queryset(self.get_queryset())
-		page = self.paginate_queryset(queryset)
-		if page is not None:
-			serializer = self.get_serializer(page, many=True)
-			return self.get_paginated_response(serializer.data)
+		user_location = None
+		try:
+			user_location = fromstr(self.request.query_params[serializers.USER_LOCATION_KEY])
+			# store user location
+			models.UserLocationHistory.objects.create(
+				user=request.user,
+				location=user_location,
+			)
 
-		serializer = self.get_serializer(queryset, many=True)
-		return Response(serializer.data)
-			
+			if ordering == 'distance':
+				queryset = models.Question.objects.active().distance(user_location).order_by('distance')
+			else:
+				queryset = self.filter_queryset(self.get_queryset())
+
+			page = self.paginate_queryset(queryset)
+			if page is not None:
+				serializer = self.get_serializer(page, many=True)
+				return self.get_paginated_response(serializer.data)
+
+			serializer = self.get_serializer(queryset, many=True)
+			return Response(serializer.data)
+		except:
+			errors = {
+				'detail': _(u'location 格式錯誤，正確格式為 POINT($longtitude $latitude)')
+			}
+			return Response(errors, status=status.HTTP_400_BAD_REQUEST)
 
 	@detail_route(methods=['get'])
 	def replys(self, request, *args, **kwargs):
@@ -219,6 +226,17 @@ class QuestionViewSet(mixins.CreateModelMixin,
 			  required: True
 			  type: integer
 			  paramType: path
+			- name: content
+			  description: 回覆內容
+			  required: True
+			  type: string
+			  paramType: form
+			- name: location
+			  description: 發問位置，字串格式為"POINT($longtitude $latitude)"，例如 POINT(121.517553 25.046283)
+			  defaultValue: POINT(121.517553 25.046283)
+			  required: True
+			  type: string
+			  paramType: form
 
 		responseMessages:
 			- code: 200

@@ -103,6 +103,15 @@ class QuestionSerializer(TimeInfoMixin, GeoModelSerializer):
 			return True
 		return False
 
+	def create(self, validated_data):
+		question = super(QuestionSerializer, self).create(validated_data)
+		# store the user location
+		models.UserLocationHistory.objects.create(
+			user=question.owner,
+			location=question.location,
+		)
+		return question
+
 	class Meta:
 		model = models.Question
 		fields = (
@@ -133,6 +142,15 @@ class ReplySerializer(TimeInfoMixin, serializers.ModelSerializer):
 			return True
 		return False
 
+	def create(self, validated_data):
+		reply = super(ReplySerializer, self).create(validated_data)
+		# store the user location
+		models.UserLocationHistory.objects.create(
+			user=reply.user,
+			location=reply.location,
+		)
+		return reply
+
 	class Meta:
 		model = models.Reply
-		fields = ('id', 'content', 'like_count', 'time_info', 'can_delete')
+		fields = ('id', 'content', 'like_count', 'time_info', 'location', 'can_delete')

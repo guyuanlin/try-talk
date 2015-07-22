@@ -39,6 +39,31 @@ class Tag(models.Model):
 		verbose_name_plural = _(u'關鍵字')
 
 
+class UserLocationHistory(models.Model):
+
+	user = models.ForeignKey(
+		settings.AUTH_USER_MODEL,
+		verbose_name=_(u'使用者'),
+	)
+	location = models.PointField(
+		verbose_name=_(u'位置'),
+		help_text=_(u'曾經取得問題列表或發問的位置'),
+	)
+	create = models.DateTimeField(
+		verbose_name=_(u'建立時間'),
+		auto_now_add=True,
+		auto_now=False,
+	)
+
+	def __unicode__(self):
+		return str(self.location)
+
+	class Meta:
+		ordering = ('-create',)
+		verbose_name = _(u'使用者位置歷史紀錄')
+		verbose_name_plural = _(u'使用者位置歷史紀錄')
+
+
 class QuestionManager(models.GeoManager):
 
 	def active(self):
@@ -131,6 +156,12 @@ class Reply(models.Model):
 	is_active = models.BooleanField(
 		verbose_name=_(u'有效'),
 		default=True,
+	)
+	location = models.PointField(
+		verbose_name=_(u'回答位置'),
+		help_text=_(u'回答位置'),
+		null=True,
+		default=None,
 	)
 	create = models.DateTimeField(
 		verbose_name=_(u'建立時間'),
