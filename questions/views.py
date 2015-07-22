@@ -9,7 +9,7 @@ from rest_framework import viewsets, mixins, filters, status
 from rest_framework.response import Response
 from rest_framework.decorators import detail_route, list_route
 
-from . import models, serializers
+from . import models, serializers, tasks
 
 class QuestionViewSet(mixins.CreateModelMixin,
 					  mixins.ListModelMixin,
@@ -27,6 +27,8 @@ class QuestionViewSet(mixins.CreateModelMixin,
 
 	def perform_create(self, serializer):
 		serializer.save(owner=self.request.user)
+		# add push notification task for question
+		tasks.push_question.delay(serializer.data)
 
 	def create(self, request, *args, **kwargs):
 		"""
