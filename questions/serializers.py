@@ -52,26 +52,26 @@ class QuestionSerializer(TimeInfoMixin, GeoModelSerializer):
 
 	id = serializers.IntegerField(
 		read_only=True,
-		help_text=_(u'問題 ID'),
+		help_text=u'問題 ID',
 	)
 	tags = TagSlugRelatedField(
 		many=True,
 		slug_field='name',
 		queryset=models.Tag.objects.all(),
-		help_text=_(u'關鍵字，型態為 array(string)'),
+		help_text=u'關鍵字，型態為 array(string)',
 	)
 	reply_count = serializers.IntegerField(
 		read_only=True,
-		help_text=_(u'回覆數量'),
+		help_text=u'回覆數量',
 	)
 	time_info = serializers.SerializerMethodField(
-		help_text=_(u'時間資訊，型別為 JSON object，包含 time(string) 與 display(string) 欄位'),
+		help_text=u'時間資訊，型別為 JSON object，包含 time(string) 與 display(string) 欄位',
 	)
 	distance_info = serializers.SerializerMethodField(
-		help_text=_(u'距離資訊，型別為 JSON object，包含 distance(integer, 單位為公里) 與 display(string) 欄位'),
+		help_text=u'距離資訊，型別為 JSON object，包含 distance(integer, 單位為公里) 與 display(string) 欄位',
 	)
 	can_delete = serializers.SerializerMethodField(
-		help_text=_(u'標示登入使用者是否可以刪除此問題')
+		help_text=u'標示登入使用者是否可以刪除此問題'
 	)
 
 	def validate_tags(self, value):
@@ -124,13 +124,16 @@ class QuestionSerializer(TimeInfoMixin, GeoModelSerializer):
 class ReplySerializer(TimeInfoMixin, serializers.ModelSerializer):
 
 	like_count = serializers.SerializerMethodField(
-		help_text=_(u'按讚數')
+		help_text=u'按讚數'
 	)
 	time_info = serializers.SerializerMethodField(
-		help_text=_(u'時間資訊，型別為 JSON object，包含 time(string) 與 display(string) 欄位'),
+		help_text=u'時間資訊，型別為 JSON object，包含 time(string) 與 display(string) 欄位',
 	)
 	can_delete = serializers.SerializerMethodField(
-		help_text=_(u'標示登入使用者是否可以刪除此回覆')
+		help_text=u'標示登入使用者是否可以刪除此回覆'
+	)
+	is_like = serializers.SerializerMethodField(
+		help_text=u'登入的使用者是否有按過讚'
 	)
 
 	def get_like_count(self, obj):
@@ -141,6 +144,10 @@ class ReplySerializer(TimeInfoMixin, serializers.ModelSerializer):
 		if login_user.pk == obj.question.owner.pk or login_user.pk == obj.user.pk:
 			return True
 		return False
+
+	def get_is_like(self, obj):
+		login_user = self.context['request'].user
+		return obj.likes.filter(id=login_user.id).exists()
 
 	def create(self, validated_data):
 		reply = super(ReplySerializer, self).create(validated_data)
@@ -153,4 +160,4 @@ class ReplySerializer(TimeInfoMixin, serializers.ModelSerializer):
 
 	class Meta:
 		model = models.Reply
-		fields = ('id', 'content', 'like_count', 'time_info', 'location', 'can_delete')
+		fields = ('id', 'content', 'like_count', 'is_like', 'time_info', 'location', 'can_delete')
