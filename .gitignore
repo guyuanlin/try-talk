@@ -72,3 +72,5 @@ static/static_files/
 
 deployment/*
 !deployment/local.sh
+
+fabfile.py
