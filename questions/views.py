@@ -27,7 +27,7 @@ class QuestionViewSet(mixins.CreateModelMixin,
 
 	def perform_create(self, serializer):
 		serializer.save(owner=self.request.user)
-		# add push notification task for question
+		# add push notification task for the created question
 		tasks.push_question.delay(serializer.data)
 
 	def create(self, request, *args, **kwargs):

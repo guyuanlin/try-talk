@@ -126,3 +126,6 @@ REST_FRAMEWORK = {
 
 # Celery settings
 BROKER_URL = 'amqp://guest:guest@localhost:5672//'
+
+# Django Site settings
+SITE_ID = 1

@@ -151,11 +151,14 @@ class ReplySerializer(TimeInfoMixin, serializers.ModelSerializer):
 
 	def create(self, validated_data):
 		reply = super(ReplySerializer, self).create(validated_data)
-		# store the user location
-		models.UserLocationHistory.objects.create(
-			user=reply.user,
-			location=reply.location,
-		)
+
+		location = validated_data.get('location', None)
+		if location:
+			# store the user location
+			models.UserLocationHistory.objects.create(
+				user=reply.user,
+				location=reply.location,
+			)
 		return reply
 
 	class Meta:

@@ -1,4 +1,5 @@
 # -*- coding: utf-8 -*-
+import logging
 from celery import shared_task
 
 from django.contrib.auth import get_user_model
@@ -45,4 +46,4 @@ def push_question(question_data):
 			notifications.append(apns_notification)
 		senders.apns_send(notifications)
 	except Question.DoesNotExist:
-		print 'question id {0} does not exist'.format(question_id)
+		logging.exception('question id {0} does not exist'.format(question_id))
