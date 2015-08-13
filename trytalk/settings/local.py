@@ -27,10 +27,9 @@ REQUEST_HEAD_FIELDS = [
 ]
 
 # mobile_notifications settings
+APNS_USE_SANDBOX = False
 APNS_CERT_PEM = 'mobile_notifications/certificates/apns-production-cert.pem'
 APNS_KEY_PEM = 'mobile_notifications/certificates/apns-production-key-noenc.pem'
-# APNS_CERT_PEM = 'mobile_notifications/certificates/apns-dev-cert.pem'
-# APNS_KEY_PEM = 'mobile_notifications/certificates/apns-dev-key-noenc.pem'
 
 # LOGGING CONFIGURATION
 # A logging configuration that writes log messages to the console.

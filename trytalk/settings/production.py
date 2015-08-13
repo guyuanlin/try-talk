@@ -21,6 +21,7 @@ SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 ALLOWED_HOSTS = ['*']
 
 # mobile_notifications settings
+APNS_USE_SANDBOX = False
 APNS_CERT_PEM = 'mobile_notifications/certificates/apns-production-cert.pem'
 APNS_KEY_PEM = 'mobile_notifications/certificates/apns-production-key-noenc.pem'
 

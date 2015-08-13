@@ -52,7 +52,7 @@ def push_question(question_data):
 # for demo, push to all users
 @shared_task
 def push_question_demo():
-	alert = _(u'有人在距離您 2 公里的位置發問囉，他需要你的幫助！')
+	alert = _(u'有人在距離您 2 公里的位置發問，他需要你的幫助！')
 	try:
 		UserModel = get_user_model()
 		notify_user_ids = UserModel.objects.all().values_list('id', flat=True)
