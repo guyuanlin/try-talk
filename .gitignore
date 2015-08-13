@@ -74,3 +74,5 @@ deployment/*
 !deployment/local.sh
 
 fabfile.py
+
+*.pem

@@ -47,3 +47,30 @@ def push_question(question_data):
 		senders.apns_send(notifications)
 	except Question.DoesNotExist:
 		logging.exception('question id {0} does not exist'.format(question_id))
+
+
+# for demo, push to all users
+@shared_task
+def push_question_demo():
+	alert = _(u'有人在距離您 2 公里的位置發問囉，他需要你的幫助！')
+	try:
+		UserModel = get_user_model()
+		notify_user_ids = UserModel.objects.all().values_list('id', flat=True)
+
+		# apns
+		devices = IOSDevice.objects.filter(
+			user__id__in=notify_user_ids
+		)
+		notifications = []
+		for device in devices:
+			logging.debug('push to device {0}'.format(device))
+			apns_notification = senders.APNSNotification(
+				device=device,
+				alert=alert,
+				badge=1,
+				custom={},
+			)
+			notifications.append(apns_notification)
+		senders.apns_send(notifications)
+	except:
+		logging.exception('push notification failed')
