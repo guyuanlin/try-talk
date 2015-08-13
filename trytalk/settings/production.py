@@ -20,6 +20,10 @@ SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
 # Allow all host headers
 ALLOWED_HOSTS = ['*']
 
+# mobile_notifications settings
+APNS_CERT_PEM = 'mobile_notifications/certificates/apns-production-cert.pem'
+APNS_KEY_PEM = 'mobile_notifications/certificates/apns-production-key-noenc.pem'
+
 SERVER_EMAIL = 'django@trytalk'
 ADMINS = (
 	('Eric Lin', 'lin.guyuan@gmail.com'),
