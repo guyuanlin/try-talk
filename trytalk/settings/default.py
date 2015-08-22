@@ -94,6 +94,8 @@ USE_L10N = True
 
 USE_TZ = False
 
+# New Question Push Ragne (unit: km)
+PUSH_RANGE = 20
 
 # E-mail settings
 EMAIL_USE_TLS = True

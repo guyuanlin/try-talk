@@ -31,6 +31,8 @@ class APNSNotification(object):
         self.uid = device.id
         self.reg_id = device.reg_id
 
+    def __unicdoe__(self):
+        return self.reg_id
 
 def apns_send(notifications, use_sandbox=use_sandbox, enhanced=True):
     if cert_pem and key_pem:

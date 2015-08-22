@@ -8,6 +8,7 @@ from django.utils.translation import ugettext as _
 from rest_framework import viewsets, mixins, filters, status
 from rest_framework.response import Response
 from rest_framework.decorators import detail_route, list_route
+from rest_framework.renderers import JSONRenderer
 
 from . import models, serializers, tasks
 
@@ -27,8 +28,11 @@ class QuestionViewSet(mixins.CreateModelMixin,
 
 	def perform_create(self, serializer):
 		serializer.save(owner=self.request.user)
+
 		# add push notification task for the created question
-		tasks.push_question.delay(serializer.data)
+		renderer = JSONRenderer()
+		question_data = renderer.render(data=serializer.data)
+		tasks.push_question.delay(question_data)
 
 	def create(self, request, *args, **kwargs):
 		"""

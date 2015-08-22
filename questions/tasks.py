@@ -1,7 +1,9 @@
 # -*- coding: utf-8 -*-
 import logging
+import json
 from celery import shared_task
 
+from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.utils.translation import ugettext as _
 from django.utils import timezone
@@ -12,15 +14,24 @@ from mobile_notifications import senders
 from questions.serializers import QuestionSerializer
 from questions.models import UserLocationHistory, Question
 
+logger = logging.getLogger(__name__)
 
 # search distance(unit:km)
-DISTANCE = 5
+DISTANCE = getattr(settings, 'PUSH_RANGE', 10)
+
+def truncat_with_dots(content, length=100):
+	if len(content) > length:
+		return content[:(length - 3)] + u'...'
+	return content
 
 @shared_task
-def push_question(question_data):
-	alert = _(u'有人在您熟悉的位置發問囉！請點擊通知觀看問題描述！')
-	custom_data = question_data
-	question_id = question_data.get('id')
+def push_question(question_json):
+	question_data = json.loads(question_json)
+	alert = _(u'[發問]') + truncat_with_dots(question_data['content'])
+	question_id = question_data['id']
+	custom_data = {
+		'id': question_id,
+	}
 	try:
 		question = Question.objects.get(id=question_id)
 		now = timezone.now()
@@ -41,12 +52,13 @@ def push_question(question_data):
 				device=device,
 				alert=alert,
 				badge=1,
-				custom=custom_data
+				custom=custom_data,
 			)
 			notifications.append(apns_notification)
+		logger.debug('push to registration ids: {0}'.format(notifications))
 		senders.apns_send(notifications)
 	except Question.DoesNotExist:
-		logging.exception('question id {0} does not exist'.format(question_id))
+		logger.exception('question id {0} does not exist'.format(question_id))
 
 
 # for demo, push to all users
@@ -63,7 +75,7 @@ def push_question_demo():
 		)
 		notifications = []
 		for device in devices:
-			logging.debug('push to device {0}'.format(device))
+			logger.debug('push to device {0}'.format(device))
 			apns_notification = senders.APNSNotification(
 				device=device,
 				alert=alert,
@@ -73,4 +85,4 @@ def push_question_demo():
 			notifications.append(apns_notification)
 		senders.apns_send(notifications)
 	except:
-		logging.exception('push notification failed')
+		logger.exception('push notification failed')
