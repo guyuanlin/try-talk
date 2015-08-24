@@ -17,7 +17,11 @@ from questions.models import UserLocationHistory, Question
 logger = logging.getLogger(__name__)
 
 # search distance(unit:km)
-DISTANCE = getattr(settings, 'PUSH_RANGE', 10)
+try:
+	DISTANCE = float(getattr(settings, 'PUSH_RANGE', 10))
+	logger.info('push notification range = {0} km'.format(DISTANCE))
+except:
+	logger.exception('read "PUSH_RANGE" from settings failed')
 
 def truncat_with_dots(content, length=100):
 	if len(content) > length:
@@ -39,8 +43,10 @@ def push_question(question_json):
 		notify_user_ids = UserLocationHistory.objects.exclude(
 			user__id=question.owner.id
 		).filter(
-			location__distance_lte=(center, D(m=(DISTANCE/100.0)))
+			location__distance_lte=(center, D(km=(DISTANCE)))
 		).order_by('user').distinct('user').values_list('user__id', flat=True)
+
+		logger.debug('notify users: {0}'.format(notify_user_ids))
 
 		# apns
 		devices = IOSDevice.objects.filter(
@@ -55,7 +61,6 @@ def push_question(question_json):
 				custom=custom_data,
 			)
 			notifications.append(apns_notification)
-		logger.debug('push to registration ids: {0}'.format(notifications))
 		senders.apns_send(notifications)
 	except Question.DoesNotExist:
 		logger.exception('question id {0} does not exist'.format(question_id))

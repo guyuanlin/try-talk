@@ -31,7 +31,7 @@ class APNSNotification(object):
         self.uid = device.id
         self.reg_id = device.reg_id
 
-    def __unicdoe__(self):
+    def __unicode__(self):
         return self.reg_id
 
 def apns_send(notifications, use_sandbox=use_sandbox, enhanced=True):
