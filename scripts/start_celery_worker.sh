@@ -13,5 +13,5 @@ source deployment/production.sh
 
 test -d $LOGDIR || mkdir -p $LOGFILE
 exec celery -A $DJANGO_PROJECT_NAME \
-	worker --loglevel=info \
+	worker --loglevel=debug \
 	2>>$LOGFILE
