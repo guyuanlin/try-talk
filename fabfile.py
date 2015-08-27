@@ -11,7 +11,7 @@ def prepare_deploy():
 	branch_name = get_branch_name()
 	local('git checkout {0}'.format(branch_name))
 	local('git merge develop')
-	local('git push github {0}'.format(branch_name))
+	local('git push origin {0}'.format(branch_name))
 
 def deploy():
 	prepare_deploy()
