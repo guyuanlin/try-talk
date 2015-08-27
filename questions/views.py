@@ -23,9 +23,6 @@ class QuestionViewSet(mixins.CreateModelMixin,
 	filter_backends = (filters.OrderingFilter,)
 	ordering_fields = ('update', 'reply_count')
 
-	def get_queryset(self):
-		return models.Question.objects.active()
-
 	def perform_create(self, serializer):
 		serializer.save(owner=self.request.user)
 
@@ -197,7 +194,7 @@ class QuestionViewSet(mixins.CreateModelMixin,
 			  message: 輸入的參數有錯誤，將有錯誤的欄位與訊息個別回報
 		"""
 		question = self.get_object()
-		queryset = question.replys.all().order_by('-update')
+		queryset = question.replys.all().order_by('id')
 
 		page = self.paginate_queryset(queryset)
 		if page is not None:
